@@ -6,11 +6,11 @@ import os
 def send_prompt(client,article_text):
     prompt = """
     Będziesz miał podany artykuł. Przekształć go w kod HTML. 
-    Użyj odpowiednich tagów HTML, aby zorganizować treść artykułu. Podziel artykuł na używając semantycznych elementów HTML5 takich jak header, section, article. Zaznacz miejsca na grafiki przy użyciu tagu 
+    Użyj odpowiednich tagów HTML, aby zorganizować treść artykułu. Podziel artykuł na używając semantycznych elementów HTML5 takich jak header, section, article,footer. Zaznacz miejsca na grafiki przy użyciu tagu 
     <img> z atrybutem src='image_placeholder.jpg'. Do każdej grafiki atrybut alt 
-    z opisem grafiki, który zostanie użyty jako zapytanie do wygenerowania odpowiedniej grafiki i podpis pod grafiką po polsku w odpowiednim tagu HTML5. Kod HTML powinien 
+    z opisem grafiki, który zostanie użyty jako zapytanie do wygenerowania odpowiedniej grafiki i podpis pod grafiką po polsku w tagu figcaption. Kod HTML powinien 
     obejmować wyłącznie zawartość między tagami <body> i </body>. 
-    Nie używaj swojego formatu kodowego html. 
+    Nie używaj swojego formatu kodowego html.
     """
     try:
         response = client.chat.completions.create(
@@ -47,7 +47,12 @@ def write_to_file(file_path,content):
     except IOError as e:
         print(f"Błąd podczas zapisywania {file_path}: {e}")
         exit(1)
-def write_to_preview(template_path,article_path,preview_path):
+def write_to_preview(template_path,html_path,preview_path):
+    template = read_file(template_path)
+    html = read_file(html_path)
+    body_location = template.find("<body>") +len("<body>")
+    preview_content = template[:body_location]+html+template[body_location:]
+    write_to_file(preview_path,preview_content)
     return
 def main():
     #Pobierz klucz z zmiennych środowiskowych
@@ -57,13 +62,19 @@ def main():
         print("Brak klucza API, ustaw klucz OXIDO_OPEN_AI_KEY w zmiennych środowiskowych")
         return
     client = OpenAI(api_key=openai_key)
+
     input_file = "artykul.txt"
     output_file = "artykul.html"
     template_file = "szablon.html"
     preview_file = "podglad.html"
-    article_text = read_file(input_file)
-    response = send_prompt(client,article_text)
-    write_to_file(output_file,response)
 
+    #czytanie artykułu
+    article_text = read_file(input_file)
+    #wysłanie zapytania
+    response = send_prompt(client,article_text)
+    #zapisanie HTML odpowiedzi
+    write_to_file(output_file,response)
+    #generowanie podglądu
+    write_to_preview(template_file,output_file,preview_file)
 if __name__ == "__main__":
     main()
