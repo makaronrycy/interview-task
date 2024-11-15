@@ -9,7 +9,7 @@ def send_prompt(client,article_text):
     aby zorganizować treść artykułu. Zaznacz miejsca na grafiki przy użyciu tagu 
     <img> z atrybutem src='image_placeholder.jpg'. Dodaj do każdej grafiki atrybut alt 
     z opisem grafiki, który może zostać użyty do wygenerowania jej i podpis pod grafiką w odpowiednim tagu HTML. Kod HTML powinien 
-    obejmować wyłącznie zawartość między tagami <body> i </body>.
+    obejmować wyłącznie zawartość między tagami <body> i </body>. Nie używaj swojego formatu kodowego html.
     """
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -23,6 +23,7 @@ def send_prompt(client,article_text):
                 "content": article_text
             }
 
+
         ]
 
     )
@@ -31,6 +32,10 @@ def send_prompt(client,article_text):
 def read_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
+def write_to_file(file_path,content):
+    with open(file_path,'w',encoding='utf-8') as file:
+        file.write(content)
+
 def main():
     #Pobierz klucz z zmiennych środowiskowych
     #Na windows otwieram konsole i wpisujemy setx OXIDO_OPEN_AI_KEY "klucz do openai"
@@ -48,6 +53,7 @@ def main():
     print(article_text)
     response = send_prompt(client,article_text)
     print(response)
+    write_to_file(output_file,response)
 
 if __name__ == "__main__":
     main()
