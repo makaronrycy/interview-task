@@ -6,11 +6,13 @@ import os
 def send_prompt(client,article_text):
     prompt = """
     Będziesz miał podany artykuł. Przekształć go w kod HTML. 
-    Użyj odpowiednich tagów HTML, aby zorganizować treść artykułu. Podziel artykuł na używając semantycznych elementów HTML5 takich jak header, section, article,footer. Zaznacz miejsca na grafiki przy użyciu tagu 
-    <img> z atrybutem src='image_placeholder.jpg'. Do każdej grafiki atrybut alt 
-    z opisem grafiki, który zostanie użyty jako zapytanie do wygenerowania odpowiedniej grafiki i podpis pod grafiką po polsku w tagu figcaption. Kod HTML powinien 
-    obejmować wyłącznie zawartość między tagami <body> i </body>. 
-    Nie używaj swojego formatu kodowego html.
+    Użyj odpowiednich tagów HTML, aby zorganizować treść artykułu. Nie zmieniaj i nie dodawaj nic do treści artykułu, ani nie zmieniaj kolejności. 
+    Podziel artykuł na używając semantycznych elementów HTML5 takich jak header, section, article,footer. 
+    Zaznacz miejsca na grafiki przy użyciu tagu <img> z atrybutem src='image_placeholder.jpg', będące w środku <figure>. Do każdej grafiki atrybut alt 
+    z dokładnym opisem grafiki, który zostanie użyty jako zapytanie do wygenerowania odpowiedniej grafiki i podpis pod grafiką po polsku w tagu figcaption.
+    Użyj <strong> lub <em> do podkreślenia wyrazów. 
+    Kod HTML powinien obejmować wyłącznie zawartość między tagami <body> i </body>, czyli nie generować tych znaczników. 
+    Zwróć sam tekst bez twojego formatowania kodu html(```html i ```)
     """
     try:
         response = client.chat.completions.create(
